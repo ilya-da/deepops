@@ -4,6 +4,9 @@
   roles:
     - name: facts
 
+- hosts: all
+  gather_facts: yes
+
 # Set root SSH key to allow SSH/ansible when no slurm job running for ansible user
 - hosts: slurm-node
   become: yes

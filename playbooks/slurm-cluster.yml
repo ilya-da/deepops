@@ -1,42 +1,35 @@
 ---
-# Slurm Cluster Playbook
+- hosts: all
+  become: yes
+  tasks:
+    # Install python required for Ansible
+    - import_tasks: bootstrap/bootstrap-python.yml
 
-# Install python required for Ansible
-- include: bootstrap/bootstrap-python.yml
+    # Set up passwordless sudo and SSH keys if needed
+    - import_tasks: bootstrap/bootstrap-ssh.yml
 
-# Set up passwordless sudo and SSH keys if needed
-- include: bootstrap/bootstrap-ssh.yml
-- include: bootstrap/bootstrap-sudo.yml
-
-# Disable cloud-init
-- include: generic/disable-cloud-init.yml
-  when: deepops_disable_cloud_init
-
-# Configure hostnames, /etc/hosts
-- include: generic/hosts.yml
-  when: "{{ slurm_configure_etc_hosts | default(true) }}"
-  tags:
-  - set-etc-hosts
-
-# Configure Chrony (NTP) sync
-- include: generic/chrony-client.yml
-  when: chrony_install|default(true)
+    - import_tasks: bootstrap/bootstrap-sudo.yml
 
 
-# Install software
-- include: generic/software.yml
+    # Configure hostnames, /etc/hosts
+    - import_tasks: generic/hosts.yml
+      when: "{{ slurm_configure_etc_hosts | default(true) }}"
+      tags:
+        - set-etc-hosts
 
-# Install Node Health Check
-- include: slurm-cluster/nhc.yml hostlist=slurm-node
-  when: slurm_install_nhc|default(false)
+    # Install Node Health Check
+    - import_tasks: slurm-cluster/nhc.yml
+      vars:
+        hostlist: slurm-node
+      when: slurm_install_nhc | default(false)
 
-# Install Slurm
-- include: slurm-cluster/slurm.yml
+    # Install Slurm
+    - import_tasks: slurm-cluster/slurm.yml
 
-# Install Enroot and Pyxis
-- include: container/pyxis.yml
-  when:
-    - slurm_install_enroot
-    - slurm_install_pyxis
-  tags:
-    - pyxis
+    # Install Enroot and Pyxis
+    - import_tasks: container/pyxis.yml
+      when:
+        - slurm_install_enroot
+        - slurm_install_pyxis
+      tags:
+        - pyxis
