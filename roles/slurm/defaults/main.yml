@@ -16,12 +16,12 @@ slurmctl_config_dir: /sw/.slurm
 slurm_sysconf_dir: /etc/sysconfig
 slurm_install_prefix: /usr/local
 slurm_cuda_prefix: /usr/local/cuda
-slurm_configure:  './configure --prefix={{ slurm_install_prefix }} --disable-dependency-tracking --disable-debug --disable-x11 --enable-really-no-cray --enable-salloc-kill-cmd --with-hdf5=no --sysconfdir={{ slurm_config_dir }} --enable-pam --with-pam_dir={{ slurm_pam_lib_dir }} --with-shared-libslurm --without-rpath --with-pmix={{ pmix_install_prefix }} --with-hwloc={{ hwloc_install_prefix }}'
-slurm_configure_nvml:  './configure --prefix={{ slurm_install_prefix }} --disable-dependency-tracking --disable-debug --disable-x11 --enable-really-no-cray --enable-salloc-kill-cmd --with-hdf5=no --sysconfdir={{ slurm_config_dir }} --enable-pam --with-pam_dir={{ slurm_pam_lib_dir }} --with-shared-libslurm --without-rpath --with-pmix={{ pmix_install_prefix }} --with-hwloc={{ hwloc_install_prefix }} --with-nvml={{ slurm_cuda_prefix }}'
+slurm_configure:  './configure --prefix={{ slurm_install_prefix }} --disable-dependency-tracking --disable-debug --disable-x11 --enable-really-no-cray --enable-salloc-kill-cmd --with-hdf5=no --sysconfdir={{ slurm_config_dir }} --enable-pam --with-pam_dir={{ slurm_pam_lib_dir }} --with-shared-libslurm --without-rpath'
+slurm_configure_nvml:  './configure --prefix={{ slurm_install_prefix }} --disable-dependency-tracking --disable-debug --disable-x11 --enable-really-no-cray --enable-salloc-kill-cmd --with-hdf5=no --sysconfdir={{ slurm_config_dir }} --enable-pam --with-pam_dir={{ slurm_pam_lib_dir }} --with-shared-libslurm --without-rpath'
 slurm_force_rebuild: no
 slurm_contain_ssh: yes
 
-slurm_cluster_name: deepops
+slurm_cluster_name: onair
 slurm_username: slurm
 slurm_password: ReplaceWithASecurePasswordInTheVault
 slurm_user_uid: 22078
@@ -46,8 +46,8 @@ slurm_resume_timeout: 900
 
 # Sets: GresTypes=gpu
 # Sets: Gres=gpu:{{ gpu_topology|count }}
-slurm_manage_gpus: true
-slurm_autodetect_nvml: true 
+slurm_manage_gpus: false
+slurm_autodetect_nvml: false
 
 # Configuration file templates to use for configuring Slurm.
 # The default values are relative paths that will point to files within the
@@ -99,7 +99,7 @@ slurm_enable_pam_slurm_adopt: true
 # Restrict user SSH access to only allow users with a running job
 slurm_restrict_node_access: true
 
-slurm_include_hwloc: yes
+slurm_include_hwloc: no
 hwloc_version: 2.5.0
 hwloc_tag: "v{{ hwloc_version.split('.')[0] }}.{{ hwloc_version.split('.')[1] }}"
 hwloc_src_url: "https://download.open-mpi.org/release/hwloc/{{ hwloc_tag }}/hwloc-{{ hwloc_version }}.tar.gz"
@@ -107,7 +107,7 @@ hwloc_install_prefix: /opt/deepops/hwloc
 hwloc_configure: "./configure --prefix={{ hwloc_install_prefix }} --enable-static --disable-cairo --disable-libxml2 --enable-netloc --enable-plugins"
 hwloc_force_rebuild: no
 
-slurm_include_pmix: yes
+slurm_include_pmix: no
 pmix_version: 3.2.3
 pmix_src_url: "https://github.com/openpmix/openpmix/releases/download/v{{ pmix_version }}/pmix-{{ pmix_version }}.tar.bz2"
 pmix_install_prefix: /opt/deepops/pmix
