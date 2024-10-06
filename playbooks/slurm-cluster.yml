@@ -1,46 +1,8 @@
 ---
-# Slurm Cluster Playbook
-
-# Install python required for Ansible
-- include: bootstrap/bootstrap-python.yml
-
-# Set up passwordless sudo and SSH keys if needed
-- include: bootstrap/bootstrap-ssh.yml
-- include: bootstrap/bootstrap-sudo.yml
-
-# Disable cloud-init
-- include: generic/disable-cloud-init.yml
-  when: deepops_disable_cloud_init
-
-# Configure hostnames, /etc/hosts
-- include: generic/hosts.yml
-  when: "{{ slurm_configure_etc_hosts | default(true) }}"
-  tags:
-  - set-etc-hosts
-
-# Configure Chrony (NTP) sync
-- include: generic/chrony-client.yml
-  when: chrony_install|default(true)
-
 # Install Node Health Check
 - include: slurm-cluster/nhc.yml hostlist=slurm-node
   when: slurm_install_nhc|default(false)
 
 # Install Slurm
 - include: slurm-cluster/slurm.yml
-
-
-## Install the NVIDIA HPC SDK
-#- include: nvidia-software/nvidia-hpc-sdk.yml
-#  vars:
-#    hostlist: "{{ sm_install_host | default('slurm-login[0]')}}"
-#  when: slurm_install_hpcsdk
-
-# Install Enroot and Pyxis
-- include: container/pyxis.yml
-  when:
-    - slurm_install_enroot
-    - slurm_install_pyxis
-  tags:
-    - pyxis
 
