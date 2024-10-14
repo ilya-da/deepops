@@ -1,0 +1,12 @@
+---
+- name: Check and write down all slurm-node sizes
+  hosts: slurm-node
+  gather_facts: no
+  tasks:
+    - name: Check slurm-nodes sizing
+      become: true
+      shell: |
+        slurmd_conf=$(slurmd -C | grep -i node | awk '{$1=""; print substr($0,2)}')
+        slurmd -Z --conf "$slurmd_conf"
+      register: command_output
+      changed_when: false
